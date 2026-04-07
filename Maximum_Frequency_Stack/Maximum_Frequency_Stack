@@ -1,0 +1,85 @@
+class Node:
+    """A singly linked list node."""
+    def __init__(self, val, next_=None):
+        self.val = val
+        self.next = next_
+
+class Stack:
+    """A LIFO stack implementation using a linked list."""
+    def __init__(self):
+        self.head = None
+
+    def push(self, x: int) -> None:
+        """
+        Pushes a new element onto the top of the stack.
+        """
+        self.head = Node(x, self.head)
+
+    def pop(self) -> int:
+        """
+        Removes and returns the element from the top of the stack.
+        """
+        if self.head is None:
+            return None
+        val = self.head.val
+        self.head = self.head.next
+        return val
+
+    def peek(self) -> int:
+        """
+        Returns the element at the top of the stack without removing it.
+        """
+        if self.head is None:
+            return None
+        return self.head.val
+
+    def empty(self) -> bool:
+        """
+        Checks whether the stack is empty.
+        """
+        return self.head is None
+
+class FreqStack:
+    """
+    A 'Frequency Stack' data structure that allows pushing elements and
+    popping the most frequent element.
+    If there is a tie for the most frequent element, the element closest
+    to the stack's top (most recently added) is removed.
+    """
+    def __init__(self):
+        self.freq = {}
+        self.group = {}
+        self.max_freq = 0
+
+    def push(self, val: int) -> None:
+        """
+        Pushes an integer onto the frequency stack.
+
+        Args:
+            val (int): The value to be pushed.
+        """
+        self.freq[val] = self.freq.get(val, 0) + 1
+        frequency = self.freq[val]
+
+        self.max_freq = max(frequency, self.max_freq)
+
+        if frequency not in self.group:
+            self.group[frequency] = Stack()
+
+        self.group[frequency].push(val)
+
+    def pop(self) -> int:
+        """
+        Removes and returns the most frequent element in the stack.
+        If there is a tie, the most recently added element is removed.
+
+        Returns:
+            int: The value of the most frequent element.
+        """
+        val = self.group[self.max_freq].pop()
+        self.freq[val] -= 1
+
+        if self.group[self.max_freq].empty():
+            self.max_freq -= 1
+
+        return val
